@@ -1,17 +1,17 @@
 import java.io.File;
 import java.io.IOException;
-import org.apache.commons.math3.stat.inference.WilcoxonSignedRankTest;
+
 
 public class Tests {
 
     public long[][] KRandomTest(Instance instance, long maxTime) {
 
         AlgorithmHolder ah = new AlgorithmHolder();
-        long timeCount = 100;
+        long timeCount = 10;
         long[][] data = ah.KRandomAlgorithmTest(instance, maxTime, timeCount);
         int i = 0;
         while(i<maxTime/timeCount){
-            System.out.println(data[0][i] + ", " + data[1][i]);
+            System.out.println(data[0][i]);
             i++;
         }
         return data;
@@ -20,12 +20,11 @@ public class Tests {
     public long[][] ExNearestNeighborTest(Instance instance, long maxTime) {
 
         AlgorithmHolder ah = new AlgorithmHolder();
-        long timeCount = 100;
+        long timeCount = 10;
         long[][] data = ah.ExNearestNeighborTest(instance, maxTime, timeCount);
         int i = 0;
         while(i<maxTime/timeCount){
-            if(data[0][i] != 0 && data[1][i] != 0)
-            System.out.println(data[0][i] + ", " + data[1][i]);
+            System.out.println(data[0][i]);
             i++;
         }
         return data;
@@ -34,11 +33,11 @@ public class Tests {
     public long[][] TwoOptTest(Instance instance, long maxTime) {
 
         AlgorithmHolder ah = new AlgorithmHolder();
-        long timeCount = 100;
+        long timeCount = 10;
         long[][] data = ah.TwoOptAlgorithmTest(instance, maxTime, timeCount);
         int i = 0;
         while(i<maxTime/timeCount){
-            System.out.println(data[0][i] + ", " + data[1][i]);
+            System.out.println(data[0][i]);
             i++;
         }
         return data;
@@ -47,10 +46,10 @@ public class Tests {
 
 
     public void runTests() throws IOException {
-        /*Instance instance = new Instance();
-        instance.generateRandomInstanceEUC_2D(600,5000);
-        long maxTime = 5000;
-        long[][] data = TwoOptTest(instance, maxTime);*/
+        //Instance instance = new Instance();
+        //instance.generateRandomInstanceEUC_2D(600,5000);
+        //long maxTime = 5000;
+        //long[][] data = TwoOptTest(instance, maxTime);
 
         /*File file = new File("data/kroA200.tsp");
         int[][] r2 = KRandWith2OPT(file);*/
@@ -58,14 +57,14 @@ public class Tests {
         /*File file = new File("data/lin105.tsp");
         int[][] r2 = NeighborWith2OPT(file);*/
 
-        File file = new File("data/pr76.tsp");
+        File file = new File("data/rat783.tsp");
         Parser parser = new Parser();
         Instance instance = new Instance();
         parser.setParameters(file, instance);
-        long maxTime = 5000;
-        long[][] data2opt = TwoOptTest(instance, maxTime);
+        long maxTime = 100;
+        //long[][] data2opt = TwoOptTest(instance, maxTime);
         long[][] dataNN = ExNearestNeighborTest(instance, maxTime);
-        long[][] dataKrand = KRandomTest(instance, maxTime);
+        //long[][] dataKrand = KRandomTest(instance, maxTime);
 
 
 
