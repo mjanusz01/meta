@@ -43,8 +43,6 @@ public class Tests {
         return data;
     }
 
-
-
     public void runTests() throws IOException {
         //Instance instance = new Instance();
         //instance.generateRandomInstanceEUC_2D(600,5000);
@@ -57,7 +55,7 @@ public class Tests {
         /*File file = new File("data/lin105.tsp");
         int[][] r2 = NeighborWith2OPT(file);*/
 
-        File file = new File("data/u159.tsp");
+        File file = new File("data/rat195.tsp");
         Parser parser = new Parser();
         AlgorithmHolder a = new AlgorithmHolder();
         Instance instance = new Instance();
@@ -71,19 +69,38 @@ public class Tests {
 
         long start;
         long end;
-
+        /*long sum = 0;
+        int iter = 1;
+        while(iter<2) {
+            s.randomOrder();
+            start = System.currentTimeMillis();
+            s = a.AccelTwoOptAlgorithm(instance, s);
+            end = System.currentTimeMillis();
+            sum = sum + (end-start);
+            iter++;
+        }
+        System.out.println(sum);
+        sum = 0;
+        iter = 1;
+        while(iter<2){
+            Solution s2 = a.ExNearestNeighbor(instance);
+            start = System.currentTimeMillis();
+            s2 = a.AccelTwoOptAlgorithm(instance, s2);
+            end = System.currentTimeMillis();
+            sum = sum + (end-start);
+            iter++;
+        }
+        System.out.println(sum);*/
         s.randomOrder();
         start = System.currentTimeMillis();
         s = a.AccelTwoOptAlgorithm(instance, s);
         end = System.currentTimeMillis();
-        System.out.print((end - start) + " ");
-
-        s = a.ExNearestNeighbor(instance);
+        System.out.println(end-start);
+        Solution s2 = a.ExNearestNeighbor(instance);
         start = System.currentTimeMillis();
-        s = a.AccelTwoOptAlgorithm(instance, s);
+        s2 = a.AccelTwoOptAlgorithm(instance, s2);
         end = System.currentTimeMillis();
-        System.out.println((end - start));
-
+        System.out.println(end-start);
 
 
     }

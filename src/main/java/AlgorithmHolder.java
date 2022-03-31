@@ -9,17 +9,18 @@ public class AlgorithmHolder {
     Solution holder;
     int distance;
 
+
     public Solution KRandomAlgorithm(Instance instance, int k) {
-        int i = 0;
-        solution = instance.getSolution();
+        int i = 0;                                              // 1 + 1 za distance
+        solution = instance.getSolution();                      // O(n^2), jeśli uwzględniamy wszystkie możliwe pola klasy solution
         solution.randomOrder(); // O(n)
         Solution holder = null;
         while (i < k) {
             solution.randomOrder(); //O(n)
-            int d = solution.totalDistance(); //O(n)
+            int d = solution.totalDistance(); //O(n)            // 1 + 3 za wywołanie metody totalDistance
             if (i == 0) {
                 distance = d;
-                holder = solution.copy();
+                holder = solution.copy();                       // O(n^2)
             } else if(d < distance) {
                 distance = d;
                 holder = solution.copy();
@@ -28,6 +29,8 @@ public class AlgorithmHolder {
         }
 
         //Razem T(n) = O(n) + k*(O(n)+O(n)) = O(n) + k*O(n) = O(n) + O(kn) = O(kn)
+        //Razem P(n) = 2O(n^2) + 6 = O(n^2). Jeśli liczyć też instancję na wejściu i param. k, to wtedy nie będzie więcej niż
+        //O(n^2) za argumenty funkcji, bo w instancji nie ma więcej niż 2-wymiarowych tablic lub list
 
         //System.out.println(holder.order);
         Solution finalSolution = holder.copy();
@@ -74,24 +77,26 @@ public class AlgorithmHolder {
 
     public Solution TwoOptAlgorithm(Instance instance, Solution solution) throws IOException { // pisa zamiast solution instance.getSolution();
 
-        holder = solution;
-        int currBestDistance = holder.totalDistance(); // O(n)
-        int newDistance = currBestDistance;
+        // Na wejściu max O(n^2)
 
-        boolean isImproved = true;
+        holder = solution;                                                          // O(n^2)
+        int currBestDistance = holder.totalDistance(); // O(n)                      // O(1)
+        int newDistance = currBestDistance;                                         // O(1)
+
+        boolean isImproved = true;                                                  // O(1)
 
         while (isImproved) {
             isImproved = false;
 
-            int i = 1;
-            int j;
+            int i = 1;                                                              // O(1)
+            int j;                                                                  // O(1)
             while(i<=holder.size && !isImproved){
                 j = i + 1;
                 while(j<=holder.size && !isImproved){
 
-                    candidate = holder.copy();
-                    candidate = invert(candidate,i,j); //O(j-i) = O(n)
-                    newDistance = candidate.totalDistance(); //O(n)
+                    candidate = holder.copy();                                      // O(n^2)
+                    candidate = invert(candidate,i,j); //O(j-i) = O(n)              // O(j-1) = O(n)
+                    newDistance = candidate.totalDistance(); //O(n) (w przypadku akcelerowanego mamy O(1))      //O(1)
                     if(newDistance<currBestDistance){
                         holder = candidate.copy();
                         currBestDistance = newDistance;
@@ -104,7 +109,8 @@ public class AlgorithmHolder {
             }
         }
 
-
+        // wewnętrzna pętla wykonuje się O(n^3), całość nie wiadomo
+        // P(n) = O(n^2)
 
         holder.frameTitle = "2-OPT Solution";
 
@@ -210,10 +216,12 @@ public class AlgorithmHolder {
 
     public Solution ExNearestNeighbor(Instance instance){
 
+        // Na początku na pewno nie więcej niż O(n^2)
+
         int currLowestDistance = Integer.MAX_VALUE;
         int distance;
         for(int i = 1; i <= instance.getDimension(); i++) {
-            candidate = NearestNeighborWithStartIndex(instance, i);
+            candidate = NearestNeighborWithStartIndex(instance, i);  // O(n^2)
 
             distance = candidate.totalDistance();
             if (distance < currLowestDistance) {
@@ -224,7 +232,10 @@ public class AlgorithmHolder {
         holder.frameTitle = "Extended Nearest Neighbor Solution";
 
         return holder;
+
     }
+
+    // P(n) = O(n^2)
 
     public Solution ExNearestNeighborTest2(Instance instance, int k){
 
@@ -232,7 +243,6 @@ public class AlgorithmHolder {
         int distance;
         for(int i = 1; i <= k; i++) {
             candidate = NearestNeighborWithStartIndex(instance, i);
-
             distance = candidate.totalDistance();
             if (distance < currLowestDistance) {
                 currLowestDistance = distance;
@@ -310,10 +320,13 @@ public class AlgorithmHolder {
     }
 
     private Solution NearestNeighborWithStartIndex(Instance instance, int start){
-        solution = new Solution();
+
+        // na wejściu O(n^2)
+
+        solution = new Solution();                              // O(n^2)
         solution.setFields(instance);
         ArrayList<Integer> notVisited = solution.order;
-        solution.order = new ArrayList<>();
+        solution.order = new ArrayList<>();                     // O(n)
 
         int curr = start;
         solution.order.add(curr);
@@ -329,7 +342,7 @@ public class AlgorithmHolder {
                 distance = instance.edge_weight_matrix[curr-1][notVisited.get(i)-1];
                 if(distance < toCurrNearest) {
                     toCurrNearest = distance;
-                    currNearestIndex = notVisited.get(i);
+                    currNearestIndex = notVisited.get(i); // Środek w czasie O(1), pętla
                 }
             }
 
@@ -338,6 +351,9 @@ public class AlgorithmHolder {
             curr = currNearestIndex;
 
         }
+
+        // Obie pętle razem w czasie O(n^2), a ze sprawdzeniem wszystkich O(n^3)
+        // P(n) = O(n^2)
 
         return solution;
     }
