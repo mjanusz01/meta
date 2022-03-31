@@ -111,9 +111,9 @@ public class AlgorithmHolder {
         return holder;
     }
 
-    public Solution AccelTwoOptAlgorithm(Instance instance) throws IOException {
+    public Solution AccelTwoOptAlgorithm(Instance instance, Solution solution) throws IOException {
 
-        holder = instance.getSolution();
+        holder = solution;
         int currBestDistance = holder.totalDistance();
         int newDistance = currBestDistance;
 

@@ -57,14 +57,32 @@ public class Tests {
         /*File file = new File("data/lin105.tsp");
         int[][] r2 = NeighborWith2OPT(file);*/
 
-        File file = new File("data/rat783.tsp");
+        File file = new File("data/u159.tsp");
         Parser parser = new Parser();
+        AlgorithmHolder a = new AlgorithmHolder();
         Instance instance = new Instance();
         parser.setParameters(file, instance);
+        Solution s = new Solution();
+        s.setFields(instance);
         long maxTime = 100;
         //long[][] data2opt = TwoOptTest(instance, maxTime);
-        long[][] dataNN = ExNearestNeighborTest(instance, maxTime);
+        //long[][] dataNN = ExNearestNeighborTest(instance, maxTime);
         //long[][] dataKrand = KRandomTest(instance, maxTime);
+
+        long start;
+        long end;
+
+        s.randomOrder();
+        start = System.currentTimeMillis();
+        s = a.AccelTwoOptAlgorithm(instance, s);
+        end = System.currentTimeMillis();
+        System.out.print((end - start) + " ");
+
+        s = a.ExNearestNeighbor(instance);
+        start = System.currentTimeMillis();
+        s = a.AccelTwoOptAlgorithm(instance, s);
+        end = System.currentTimeMillis();
+        System.out.println((end - start));
 
 
 
