@@ -19,16 +19,24 @@ public class Main {
 
 
 
+
+       /* Instance instance = new Instance();
+        instance.generateRandomInstanceEUC_2D(100,1000); //generowanie 10 losowych punktow o wspolrzednych z przedzialu [0,40]
+        Solution solution = instance.getSolution();*/
         /*ToFileWriter tfw = new ToFileWriter();
         Parser parser = new Parser();
-        /*Instance instance = new Instance();
-        instance.generateRandomInstanceEUC_2D(40,1000); //generowanie 10 losowych punktow o wspolrzednych z przedzialu [0,40]
-        Solution solution = instance.getSolution();*/
-
-        /*File file = new File("data/ch130.opt.tour");
+        File file = new File("data/kroA200.tsp");
         Solution solution = new Solution();
-        parser.parseSolution(file, solution);
-        solution.visualize();*/
+        Instance instance = new Instance();
+        parser.setParameters(file,instance);*/
+
+        /*AlgorithmHolder ah = new AlgorithmHolder();
+        instance.printList();
+        Solution s = ah.TwoOptAlgorithm(instance);
+        System.out.println("tu");
+        s.printOrder();
+        System.out.println("tu");
+        s.visualize();*/
 
         /*solution.visualize();
         solution.randomOrder();
@@ -53,7 +61,7 @@ public class Main {
 
         solution.randomOrder();
         solution.printOrder();
-        solution.visualize();*/
+        solution.visualize();
 
         /*solution = alg.KRandomAlgorithm(instance,9000000);
         solution.visualize();*/

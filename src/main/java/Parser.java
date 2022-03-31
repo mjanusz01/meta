@@ -92,9 +92,6 @@ public class Parser {
             i++;
         }
         EUC2D_toMatrix(instance);
-
-
-
     }
 
     public void EUC2D_toMatrix(Instance instance){

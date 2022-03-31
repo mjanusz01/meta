@@ -49,7 +49,7 @@ public class Visualization extends JPanel implements Serializable {
         int maxX = getMaxX();
         int maxY = getMaxY();
         while(i<solution.pointList.size()){
-            if(i == solution.order.get(0)-1 ){
+            if(i == solution.order.get(0)-1){
                 g.setColor(Color.BLUE);
             }
             else{

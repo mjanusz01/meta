@@ -12,25 +12,24 @@ public class AlgorithmHolder {
     public Solution KRandomAlgorithm(Instance instance, int k) {
         int i = 0;
         solution = instance.getSolution();
-        solution.randomOrder();
+        solution.randomOrder(); // O(n)
         Solution holder = null;
         while (i < k) {
-            solution.randomOrder();
+            solution.randomOrder(); //O(n)
+            int d = solution.totalDistance(); //O(n)
             if (i == 0) {
-                distance = solution.totalDistance();
+                distance = d;
                 holder = solution.copy();
-            } else if(solution.totalDistance() < distance) {
-                distance = solution.totalDistance();
+            } else if(d < distance) {
+                distance = d;
                 holder = solution.copy();
             }
             i++;
-            //System.out.println("Aktualne: " + distance  + ", Wylosowane: " + solution.totalDistance());
         }
 
-        //solution.printPoints();
-        //solution.printMatrix();
-        System.out.println(holder.order);
-        //System.out.println(solution.order);
+        //Razem T(n) = O(n) + k*(O(n)+O(n)) = O(n) + k*O(n) = O(n) + O(kn) = O(kn)
+
+        //System.out.println(holder.order);
         Solution finalSolution = holder.copy();
         finalSolution.frameTitle = "k-Random Solution";
         return finalSolution;
@@ -73,10 +72,10 @@ public class AlgorithmHolder {
 
 
 
-    public Solution TwoOptAlgorithm(Instance instance) throws IOException {
+    public Solution TwoOptAlgorithm(Instance instance, Solution solution) throws IOException { // pisa zamiast solution instance.getSolution();
 
-        holder = instance.getSolution();
-        int currBestDistance = holder.totalDistance();
+        holder = solution;
+        int currBestDistance = holder.totalDistance(); // O(n)
         int newDistance = currBestDistance;
 
         boolean isImproved = true;
@@ -91,20 +90,21 @@ public class AlgorithmHolder {
                 while(j<=holder.size && !isImproved){
 
                     candidate = holder.copy();
-                    candidate = invert(candidate,i,j);
-                    newDistance = candidate.totalDistance();
+                    candidate = invert(candidate,i,j); //O(j-i) = O(n)
+                    newDistance = candidate.totalDistance(); //O(n)
                     if(newDistance<currBestDistance){
                         holder = candidate.copy();
                         currBestDistance = newDistance;
                         isImproved = true;
                     }
-
                     //System.out.println("i = " + i + ", j = " + j);
                     j++;
                 }
                 i++;
             }
         }
+
+
 
         holder.frameTitle = "2-OPT Solution";
 
@@ -189,15 +189,17 @@ public class AlgorithmHolder {
         int[] pom =  new int[j-i+1];
         int it = 0;
         while(it<=j-i){
-            pom[it] = solution.order.get(it+i-1);
+            pom[it] = solution.order.get(it+i-1); //O(1)
             it++;
         }
         it = 0;
         while(it<=j-i){
-            solution.order.set(it+i-1,pom[(j-i)-it]);
+            solution.order.set(it+i-1,pom[(j-i)-it]); //O(1)
             it++;
         }
         return solution;
+
+        //Razem I(n) = 2*(j-i)*O(1) = O(j-i);
     }
 
     public Solution NearestNeighbor(Instance instance){
@@ -218,6 +220,25 @@ public class AlgorithmHolder {
                 currLowestDistance = distance;
                 holder = candidate;
             }
+        }
+        holder.frameTitle = "Extended Nearest Neighbor Solution";
+
+        return holder;
+    }
+
+    public Solution ExNearestNeighborTest2(Instance instance, int k){
+
+        int currLowestDistance = Integer.MAX_VALUE;
+        int distance;
+        for(int i = 1; i <= k; i++) {
+            candidate = NearestNeighborWithStartIndex(instance, i);
+
+            distance = candidate.totalDistance();
+            if (distance < currLowestDistance) {
+                currLowestDistance = distance;
+                holder = candidate;
+            }
+
         }
         holder.frameTitle = "Extended Nearest Neighbor Solution";
 
