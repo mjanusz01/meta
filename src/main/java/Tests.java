@@ -1,5 +1,6 @@
 import java.io.File;
 import java.io.IOException;
+import org.apache.commons.math3.stat.inference.WilcoxonSignedRankTest;
 
 public class Tests {
 
@@ -54,8 +55,19 @@ public class Tests {
         /*File file = new File("data/kroA200.tsp");
         int[][] r2 = KRandWith2OPT(file);*/
 
-        File file = new File("data/lin105.tsp");
-        int[][] r2 = NeighborWith2OPT(file);
+        /*File file = new File("data/lin105.tsp");
+        int[][] r2 = NeighborWith2OPT(file);*/
+
+        File file = new File("data/pr76.tsp");
+        Parser parser = new Parser();
+        Instance instance = new Instance();
+        parser.setParameters(file, instance);
+        long maxTime = 5000;
+        long[][] data2opt = TwoOptTest(instance, maxTime);
+        long[][] dataNN = ExNearestNeighborTest(instance, maxTime);
+        long[][] dataKrand = KRandomTest(instance, maxTime);
+
+
 
     }
 
