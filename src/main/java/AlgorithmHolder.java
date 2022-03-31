@@ -9,7 +9,6 @@ public class AlgorithmHolder {
     Solution holder;
     int distance;
 
-
     public Solution KRandomAlgorithm(Instance instance, int k) {
         int i = 0;                                              // 1 + 1 za distance
         solution = instance.getSolution();                      // O(n^2), jeśli uwzględniamy wszystkie możliwe pola klasy solution
@@ -37,43 +36,6 @@ public class AlgorithmHolder {
         finalSolution.frameTitle = "k-Random Solution";
         return finalSolution;
     }
-
-    public long[][] KRandomAlgorithmTest(Instance instance, long maxTime, long timeCount) {
-
-        solution = instance.getSolution();
-        solution.randomOrder();
-        long[][] results = new long[2][(int) (maxTime/timeCount)];
-        int i = 0;
-        int k = 0;
-        long sum = 0;
-        long start = System.currentTimeMillis();
-        int j = 0;
-        while (true) {
-            solution.randomOrder();
-            k = solution.totalDistance();
-            if (i == 0) {
-                distance = solution.totalDistance();
-            } else if(k < distance) {
-                distance = k;
-            }
-            //System.out.println("Aktualne: " + distance  + ", Wylosowane: " + solution.totalDistance());
-            long end = System.currentTimeMillis();
-            if(end-start>=timeCount){
-                sum = sum + (end-start);
-                results[0][i] = distance;
-                results[1][i] = sum;
-                start = System.currentTimeMillis();
-                i++;
-            }
-            j++;
-            if(sum>=maxTime){
-                System.out.println("Iteracje: "+j);
-                return results;
-            }
-        }
-    }
-
-
 
     public Solution TwoOptAlgorithm(Instance instance, Solution solution) throws IOException { // pisa zamiast solution instance.getSolution();
 
@@ -234,8 +196,136 @@ public class AlgorithmHolder {
         return holder;
 
     }
-
     // P(n) = O(n^2)
+
+    private Solution NearestNeighborWithStartIndex(Instance instance, int start){
+
+        // na wejściu O(n^2)
+
+        solution = new Solution();                              // O(n^2)
+        solution.setFields(instance);
+        ArrayList<Integer> notVisited = solution.order;
+        solution.order = new ArrayList<>();                     // O(n)
+
+        int curr = start;
+        solution.order.add(curr);
+        notVisited.remove(Integer.valueOf(curr));
+        int toCurrNearest;
+        int currNearestIndex = 0;
+        int distance;
+
+        while (notVisited.size() > 0) {
+            toCurrNearest = Integer.MAX_VALUE;
+
+            for (int i = 0; i < notVisited.size(); i++) {
+                distance = instance.edge_weight_matrix[curr-1][notVisited.get(i)-1];
+                if(distance < toCurrNearest) {
+                    toCurrNearest = distance;
+                    currNearestIndex = notVisited.get(i); // Środek w czasie O(1), pętla
+                }
+            }
+
+            solution.order.add(currNearestIndex);
+            notVisited.remove(Integer.valueOf(currNearestIndex));
+            curr = currNearestIndex;
+
+        }
+
+        // Obie pętle razem w czasie O(n^2), a ze sprawdzeniem wszystkich O(n^3)
+        // P(n) = O(n^2)
+
+        return solution;
+    }
+
+    public long[][] KRandomAlgorithmTest(Instance instance, long maxTime, long timeCount) {
+
+        solution = instance.getSolution();
+        solution.randomOrder();
+        long[][] results = new long[2][(int) (maxTime/timeCount)];
+        int i = 0;
+        int k = 0;
+        long sum = 0;
+        long start = System.currentTimeMillis();
+        int j = 0;
+        while (true) {
+            solution.randomOrder();
+            k = solution.totalDistance();
+            if (i == 0) {
+                distance = solution.totalDistance();
+            } else if(k < distance) {
+                distance = k;
+            }
+            //System.out.println("Aktualne: " + distance  + ", Wylosowane: " + solution.totalDistance());
+            long end = System.currentTimeMillis();
+            if(end-start>=timeCount){
+                sum = sum + (end-start);
+                results[0][i] = distance;
+                results[1][i] = sum;
+                start = System.currentTimeMillis();
+                i++;
+            }
+            j++;
+            if(sum>=maxTime){
+                System.out.println("Iteracje: "+j);
+                return results;
+            }
+        }
+    }
+
+    public long[][] TwoOptAlgorithmTest(Instance instance, long maxTime, long timeCount) {
+
+        holder = instance.getSolution();
+        int currLowestDistance = holder.totalDistance();
+        int newDistance = currLowestDistance;
+
+        boolean isImproved = true;
+
+        long[][] results = new long[2][(int) (maxTime/timeCount)];
+        int k = 0;
+        long sum = 0;
+        long start = System.currentTimeMillis();
+        int n = 0;
+        while (isImproved) {
+            isImproved = false;
+
+            int i = 1;
+            int j;
+            while(i<=holder.size && !isImproved){
+                j = i + 1;
+                while(j<=holder.size && !isImproved){
+
+                    candidate = holder.copy();
+                    candidate = invert(candidate,i,j);
+                    newDistance = candidate.totalDistance();
+                    if(newDistance<currLowestDistance){
+                        holder = candidate.copy();
+                        currLowestDistance = newDistance;
+                        isImproved = true;
+                    }
+
+                    long end = System.currentTimeMillis();
+                    if(end-start>=timeCount){
+                        sum = sum + (end-start);
+                        results[0][k] = currLowestDistance;
+                        results[1][k] = sum;
+                        start = System.currentTimeMillis();
+                        k++;
+                    }
+                    n++;
+
+                    if(sum>=maxTime){
+                        System.out.println("Iteracje: "+ n);
+                        return results;
+                    }
+                    //System.out.println("i = " + i + ", j = " + j);
+                    j++;
+                }
+                i++;
+            }
+        }
+
+        return results;
+    }
 
     public Solution ExNearestNeighborTest2(Instance instance, int k){
 
@@ -316,101 +406,6 @@ public class AlgorithmHolder {
         }
 
         System.out.println("Iteracje: " + instance.getDimension());
-        return results;
-    }
-
-    private Solution NearestNeighborWithStartIndex(Instance instance, int start){
-
-        // na wejściu O(n^2)
-
-        solution = new Solution();                              // O(n^2)
-        solution.setFields(instance);
-        ArrayList<Integer> notVisited = solution.order;
-        solution.order = new ArrayList<>();                     // O(n)
-
-        int curr = start;
-        solution.order.add(curr);
-        notVisited.remove(Integer.valueOf(curr));
-        int toCurrNearest;
-        int currNearestIndex = 0;
-        int distance;
-
-        while (notVisited.size() > 0) {
-            toCurrNearest = Integer.MAX_VALUE;
-
-            for (int i = 0; i < notVisited.size(); i++) {
-                distance = instance.edge_weight_matrix[curr-1][notVisited.get(i)-1];
-                if(distance < toCurrNearest) {
-                    toCurrNearest = distance;
-                    currNearestIndex = notVisited.get(i); // Środek w czasie O(1), pętla
-                }
-            }
-
-            solution.order.add(currNearestIndex);
-            notVisited.remove(Integer.valueOf(currNearestIndex));
-            curr = currNearestIndex;
-
-        }
-
-        // Obie pętle razem w czasie O(n^2), a ze sprawdzeniem wszystkich O(n^3)
-        // P(n) = O(n^2)
-
-        return solution;
-    }
-
-    public long[][] TwoOptAlgorithmTest(Instance instance, long maxTime, long timeCount) {
-
-        holder = instance.getSolution();
-        int currLowestDistance = holder.totalDistance();
-        int newDistance = currLowestDistance;
-
-        boolean isImproved = true;
-
-        long[][] results = new long[2][(int) (maxTime/timeCount)];
-        int k = 0;
-        long sum = 0;
-        long start = System.currentTimeMillis();
-        int n = 0;
-        while (isImproved) {
-            isImproved = false;
-
-            int i = 1;
-            int j;
-            while(i<=holder.size && !isImproved){
-                j = i + 1;
-                while(j<=holder.size && !isImproved){
-
-                    candidate = holder.copy();
-                    candidate = invert(candidate,i,j);
-                    newDistance = candidate.totalDistance();
-                    if(newDistance<currLowestDistance){
-                        holder = candidate.copy();
-                        currLowestDistance = newDistance;
-                        isImproved = true;
-                    }
-
-                    long end = System.currentTimeMillis();
-                    if(end-start>=timeCount){
-                        sum = sum + (end-start);
-                        results[0][k] = currLowestDistance;
-                        results[1][k] = sum;
-                        start = System.currentTimeMillis();
-                        k++;
-                    }
-                    n++;
-
-                    if(sum>=maxTime){
-                        System.out.println("Iteracje: "+ n);
-                        return results;
-                    }
-                    //System.out.println("i = " + i + ", j = " + j);
-                    j++;
-                }
-                i++;
-            }
-        }
-
-
         return results;
     }
 

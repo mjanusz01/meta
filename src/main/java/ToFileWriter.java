@@ -112,7 +112,7 @@ public class ToFileWriter {
             OutputStreamWriter osw = new OutputStreamWriter(fos);
             BufferedWriter bw = new BufferedWriter(osw);
 
-            String temp = "NAME: " + solution.instance.getName();
+            String temp = "NAME: " + solution.instance.getName() + ".tour";
             bw.write(temp);
             bw.newLine();
 
