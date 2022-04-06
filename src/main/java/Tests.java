@@ -16,11 +16,11 @@ public class Tests {
 
         long maxTime = 10000;
         //long[][] data2opt = TwoOptTest(instance, maxTime);
-        //long[][] dataAcc2opt = AccelTwoOptTest(instance, maxTime);
+        long[][] dataAcc2opt = AccelTwoOptTest(instance, maxTime);
         long[][] dataNN = ExNearestNeighborTest(instance, maxTime);
-        //long[][] dataKrand = KRandomTest(instance, maxTime);
-        s = a.ExNearestNeighbor(instance);
-        System.out.println(s.totalDistance());
+        long[][] dataKrand = KRandomTest(instance, maxTime);
+        //s = a.ExNearestNeighbor(instance);
+        //System.out.println(s.totalDistance());
         //s.setFields(instance);
         //s = a.TwoOptAlgorithm(instance, s);
         //System.out.println(s.totalDistance());
