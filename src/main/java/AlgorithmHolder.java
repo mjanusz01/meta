@@ -12,7 +12,7 @@ public class AlgorithmHolder {
     public Solution KRandomAlgorithm(Instance instance, int k) {
         int i = 0;                                              // 1 + 1 za distance
         solution = instance.getSolution();                      // O(n^2), jeśli uwzględniamy wszystkie możliwe pola klasy solution
-        solution.randomOrder(); // O(n)
+        //solution.randomOrder(); // O(n)
         Solution holder = null;
         while (i < k) {
             solution.randomOrder(); //O(n)
@@ -37,7 +37,7 @@ public class AlgorithmHolder {
         return finalSolution;
     }
 
-    public Solution TwoOptAlgorithm(Instance instance, Solution solution) throws IOException { // pisa zamiast solution instance.getSolution();
+    public Solution TwoOptAlgorithm(Instance instance, Solution solution) throws IOException { // pisac zamiast solution instance.getSolution();
 
         // Na wejściu max O(n^2)
 
@@ -188,7 +188,7 @@ public class AlgorithmHolder {
             distance = candidate.totalDistance();
             if (distance < currLowestDistance) {
                 currLowestDistance = distance;
-                holder = candidate;
+                holder = candidate.copy();
             }
         }
         holder.frameTitle = "Extended Nearest Neighbor Solution";
@@ -266,7 +266,7 @@ public class AlgorithmHolder {
             }
             j++;
             if(sum>=maxTime){
-                System.out.println("Iteracje: "+j);
+                //System.out.println("Iteracje: "+j);
                 return results;
             }
         }
@@ -314,7 +314,7 @@ public class AlgorithmHolder {
                     n++;
 
                     if(sum>=maxTime){
-                        System.out.println("Iteracje: "+ n);
+                        //System.out.println("Iteracje: "+ n);
                         return results;
                     }
                     //System.out.println("i = " + i + ", j = " + j);
@@ -324,6 +324,14 @@ public class AlgorithmHolder {
             }
         }
 
+        long end = System.currentTimeMillis();
+        sum = sum + (end-start);
+        while (k < maxTime/timeCount) {
+            results[0][k] = currLowestDistance;
+            results[1][k] = sum;
+            k++;
+        }
+        //System.out.println("Iteracje: "+ n);
         return results;
     }
 
@@ -349,6 +357,7 @@ public class AlgorithmHolder {
 
         holder = new Solution();
         holder.setFields(instance);
+
         int currLowestDistance = Integer.MAX_VALUE;
         int distance;
         long[][] results = new long[2][(int) (maxTime/timeCount)];
@@ -360,6 +369,7 @@ public class AlgorithmHolder {
 
             ArrayList<Integer> notVisited = candidate.order;
             candidate.order = new ArrayList<>();
+
 
             int curr = i;
             candidate.order.add(curr);
@@ -388,7 +398,7 @@ public class AlgorithmHolder {
                     }
 
                     if(sum>=maxTime){
-                        System.out.println("Iteracje: "+ i);
+                        //System.out.println("Iteracje: "+ i);
                         return results;
                     }
                 }
@@ -401,12 +411,113 @@ public class AlgorithmHolder {
             distance = candidate.totalDistance();
             if (distance < currLowestDistance) {
                 currLowestDistance = distance;
-                holder = candidate;
+                holder = candidate.copy();
             }
         }
 
-        System.out.println("Iteracje: " + instance.getDimension());
+        long end = System.currentTimeMillis();
+        sum = sum + (end-start);
+        while (k < maxTime/timeCount) {
+            results[0][k] = currLowestDistance;
+            results[1][k] = sum;
+            k++;
+        }
+        //System.out.println("Iteracje: " + instance.getDimension());
+
+        //System.out.println("XD ");
         return results;
     }
 
+    public long[][] AccelTwoOptAlgorithmTest(Instance instance, long maxTime, long timeCount) {
+
+        holder = instance.getSolution();
+        int currBestDistance = holder.totalDistance();
+        int newDistance = currBestDistance;
+
+        int[] swapDistances = new int[4]; // elementy o indeksach 0 i 1 będziemy odejmować, 2 i 3 dodawać;
+        boolean isImproved = true;
+
+        long[][] results = new long[2][(int) (maxTime/timeCount)];
+        int k = 0;
+        long sum = 0;
+        long start = System.currentTimeMillis();
+        int n = 0;
+        while (isImproved) {
+            isImproved = false;
+
+            int i = 1;
+            int j;
+            while(i<=holder.size && !isImproved){
+                j = i + 1;
+                while(j<=holder.size && !isImproved){
+
+                    candidate = holder.copy();
+                    candidate = invert(candidate,i,j);
+
+                    if (instance.getType().equals(Instance.type_enum.TSP) && !(i == 1 && j == holder.size)) {
+
+                        if (i > 1) {
+                            // odleglosc miedzy i-1-wszym oraz i-tym do odjecia
+                            swapDistances[0] = instance.edge_weight_matrix[holder.order.get(i - 2) - 1][holder.order.get(i - 1) - 1];
+                            // odleglosc miedzy i-1-wszym oraz j-tym do dodania
+                            swapDistances[2] = instance.edge_weight_matrix[holder.order.get(i - 2) - 1][holder.order.get(j - 1) - 1];
+                        } else {
+                            swapDistances[0] = instance.edge_weight_matrix[holder.order.get(holder.size - 1) - 1][holder.order.get(i - 1) - 1];
+                            swapDistances[2] = instance.edge_weight_matrix[holder.order.get(holder.size - 1) - 1][holder.order.get(j - 1) - 1];
+                        }
+
+                        if (j < holder.size) {
+                            // odleglosc miedzy j-tym raz j+1-wszym do odjecia
+                            swapDistances[1] = instance.edge_weight_matrix[holder.order.get(j - 1) - 1][holder.order.get(j) - 1];
+                            // odleglosc miedzy i-tym raz j+1-wszym do dodania
+                            swapDistances[3] = instance.edge_weight_matrix[holder.order.get(i - 1) - 1][holder.order.get(j) - 1];
+                        } else {
+                            swapDistances[1] = instance.edge_weight_matrix[holder.order.get(j - 1) - 1][holder.order.get(0) - 1];
+                            swapDistances[3] = instance.edge_weight_matrix[holder.order.get(i - 1) - 1][holder.order.get(0) - 1];
+                        }
+
+                        newDistance = currBestDistance - swapDistances[0] - swapDistances[1] + swapDistances[2] + swapDistances[3];
+
+                    } else if (instance.getType().equals(Instance.type_enum.ATSP)){
+                        newDistance = candidate.totalDistance();
+                    }
+
+                    if(newDistance<currBestDistance){
+                        holder = candidate.copy();
+                        currBestDistance = newDistance;
+                        isImproved = true;
+                    }
+
+                    long end = System.currentTimeMillis();
+                    if(end-start>=timeCount){
+                        sum = sum + (end-start);
+                        results[0][k] = currBestDistance;
+                        results[1][k] = sum;
+                        start = System.currentTimeMillis();
+                        k++;
+                    }
+                    n++;
+
+                    if(sum>=maxTime){
+                        //System.out.println("Iteracje: "+ n);
+                        return results;
+                    }
+                    //System.out.println("i = " + i + ", j = " + j);
+                    j++;
+                }
+                i++;
+            }
+        }
+
+        long end = System.currentTimeMillis();
+        sum = sum + (end-start);
+        while (k < maxTime/timeCount) {
+            results[0][k] = currBestDistance;
+            results[1][k] = sum;
+            k++;
+        }
+        //System.out.println("Iteracje: " + n);
+
+        return results;
+    }
 }

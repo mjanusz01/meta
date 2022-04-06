@@ -6,20 +6,27 @@ public class Tests {
 
     public void runTests() throws IOException {
 
-        File file = new File("data/rat195.tsp");
+        File file = new File("data/u574.tsp");
         Parser parser = new Parser();
         AlgorithmHolder a = new AlgorithmHolder();
         Instance instance = new Instance();
         parser.setParameters(file, instance);
         Solution s = new Solution();
         s.setFields(instance);
-        //long maxTime = 100;
-        //long[][] data2opt = TwoOptTest(instance, maxTime);
-        //long[][] dataNN = ExNearestNeighborTest(instance, maxTime);
-        //long[][] dataKrand = KRandomTest(instance, maxTime);
 
-        long start;
-        long end;
+        long maxTime = 10000;
+        //long[][] data2opt = TwoOptTest(instance, maxTime);
+        //long[][] dataAcc2opt = AccelTwoOptTest(instance, maxTime);
+        long[][] dataNN = ExNearestNeighborTest(instance, maxTime);
+        //long[][] dataKrand = KRandomTest(instance, maxTime);
+        s = a.ExNearestNeighbor(instance);
+        System.out.println(s.totalDistance());
+        //s.setFields(instance);
+        //s = a.TwoOptAlgorithm(instance, s);
+        //System.out.println(s.totalDistance());
+
+        //long start;
+        //long end;
         /*long sum = 0;
         int iter = 1;
         while(iter<2) {
@@ -42,7 +49,7 @@ public class Tests {
             iter++;
         }
         System.out.println(sum);*/
-        s.randomOrder();
+        /*s.randomOrder();
         start = System.currentTimeMillis();
         s = a.AccelTwoOptAlgorithm(instance, s);
         end = System.currentTimeMillis();
@@ -51,7 +58,7 @@ public class Tests {
         start = System.currentTimeMillis();
         s2 = a.AccelTwoOptAlgorithm(instance, s2);
         end = System.currentTimeMillis();
-        System.out.println(end-start);
+        System.out.println(end-start);*/
 
 
     }
@@ -59,7 +66,7 @@ public class Tests {
     public long[][] KRandomTest(Instance instance, long maxTime) {
 
         AlgorithmHolder ah = new AlgorithmHolder();
-        long timeCount = 10;
+        long timeCount = maxTime;
         long[][] data = ah.KRandomAlgorithmTest(instance, maxTime, timeCount);
         int i = 0;
         while(i<maxTime/timeCount){
@@ -72,7 +79,7 @@ public class Tests {
     public long[][] ExNearestNeighborTest(Instance instance, long maxTime) {
 
         AlgorithmHolder ah = new AlgorithmHolder();
-        long timeCount = 10;
+        long timeCount = maxTime;
         long[][] data = ah.ExNearestNeighborTest(instance, maxTime, timeCount);
         int i = 0;
         while(i<maxTime/timeCount){
@@ -85,7 +92,7 @@ public class Tests {
     public long[][] TwoOptTest(Instance instance, long maxTime) {
 
         AlgorithmHolder ah = new AlgorithmHolder();
-        long timeCount = 10;
+        long timeCount = maxTime;
         long[][] data = ah.TwoOptAlgorithmTest(instance, maxTime, timeCount);
         int i = 0;
         while(i<maxTime/timeCount){
@@ -95,6 +102,17 @@ public class Tests {
         return data;
     }
 
+    public long[][] AccelTwoOptTest(Instance instance, long maxTime) {
+        AlgorithmHolder ah = new AlgorithmHolder();
+        long timeCount = maxTime;
+        long[][] data = ah.AccelTwoOptAlgorithmTest(instance, maxTime, timeCount);
+        int i = 0;
+        while(i<maxTime/timeCount){
+            System.out.println(data[0][i]);
+            i++;
+        }
+        return data;
+    }
     public int[][] KRandWith2OPT(File file) throws IOException {
         Parser parser = new Parser();
         Instance instance = new Instance();

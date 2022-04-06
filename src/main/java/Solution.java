@@ -12,19 +12,16 @@ public class Solution implements Serializable {
 
     public Visualization v;
     public String frameTitle = "";
+
     public Instance instance;
     public int size;
     public ArrayList<Point2D.Double> pointList; // na wypadek euklidesowego i wizualizacji
+
     public ArrayList<Integer> order;
     public int[][] edge_weight_matrix;
 
     public void randomOrder(){
         Collections.shuffle(order);
-    }
-
-    public Solution randomOrder2(){
-        Collections.shuffle(order);
-        return this;
     }
 
     public void setFields(Instance instance){
@@ -77,18 +74,6 @@ public class Solution implements Serializable {
         System.out.println(" ");
     }
 
-    public int totalDistance2(){
-        int sum = 0;
-        int j1, j2;
-        for (int i = 0; i < size; i++) {
-            j1 = order.get(i)-1;
-            if(i < size - 1) j2 = order.get(i+1)-1;
-            else j2 = order.get(0) - 1;
-            sum += edge_weight_matrix[j1][j2];
-        }
-        return sum;
-    }
-
     public int totalDistance(){
         int sum = 0;
         int i = 0;
@@ -104,9 +89,6 @@ public class Solution implements Serializable {
         }
         return sum;
     }
-
-
-
 
     public void printMatrix(){
         int i = 0;
